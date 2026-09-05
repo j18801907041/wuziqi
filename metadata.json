@@ -1,0 +1,6 @@
+{
+  "name": "五子棋",
+  "description": "经典的五子棋对弈应用，支持人机对战（初级、中级、大师）、双人同屏对战、悔棋、复盘回放与对局战报统计。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
