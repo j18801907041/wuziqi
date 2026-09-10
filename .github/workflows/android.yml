@@ -11,18 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
-    
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: 9.3.1
-    
-    - name: Build with Gradle
-      run: gradle build --no-daemon --stacktrace
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.3.1
+
+      # 从 GitHub Secret 创建 Firebase 配置文件
+      - name: Create google-services.json
+        if: ${{ secrets.GOOGLE_SERVICES_JSON_B64 != '' }}
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_B64 }}" | base64 --decode > app/google-services.json
+
+      - name: Build with Gradle
+        run: gradle build --no-daemon --stacktrace
+
+      # 构建结束后删除敏感文件
+      - name: Remove google-services.json
+        if: always()
+        run: rm -f app/google-services.json
