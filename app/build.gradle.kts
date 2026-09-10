@@ -1,7 +1,3 @@
-import com.google.gms.googleservices.GoogleServicesPlugin
-import com.google.firebase.platforminfo.KotlinPlatformInfo
-import com.google.android.libraries.mapsplatform.secrets_gradle_plugin.SecretsPlugin
-
 plugins {
   alias(libs.plugins.android.application) apply false
   alias(libs.plugins.kotlin.compose) apply false
@@ -57,4 +53,4 @@ secrets {
   ignoreList.add("FIREBASE_APPCHECK_DEBUG_TOKEN")
 }
 
-googleServices { missingGoogleServicesStrategy = GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN }
+googleServices { missingGoogleServicesStrategy = com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy.WARN }
