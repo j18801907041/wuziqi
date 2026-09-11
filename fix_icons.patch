@@ -1,0 +1,5 @@
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessHistory
+import androidx.compose.material.icons.filled.Leaderboard
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SportsEsports
