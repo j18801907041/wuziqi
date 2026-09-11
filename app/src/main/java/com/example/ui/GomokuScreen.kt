@@ -21,7 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessHistory
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SportsEsports
@@ -221,7 +221,7 @@ fun SleekBottomNavBar(
 
       // 2. 复盘 (Replay)
       SleekNavItem(
-        icon = Icons.Default.AccessHistory,
+        icon = Icons.Default.History,
         label = "复盘",
         isActive = isReplayMode,
         onClick = onSelectReplay,
