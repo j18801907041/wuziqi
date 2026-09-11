@@ -1,48 +1,101 @@
 package com.example.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Leaderboard
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.weight
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.model.GameStatus
+import com.example.ui.components.GameControlBar
+import com.example.ui.components.GameHeader
+import com.example.ui.components.GameOverDialog
+import com.example.ui.components.GameRulesDialog
+import com.example.ui.components.GameSettingsDialog
+import com.example.ui.components.GameStatsDialog
+import com.example.ui.components.GomokuBoard
+
+/** The game surface that connects the ViewModel state to the board and controls. */
+@Composable
+fun GomokuScreen(viewModel: GomokuViewModel = viewModel()) {
+  val uiState by viewModel.uiState.collectAsState()
+  val stats by viewModel.stats.collectAsState()
+  val winningLine = (uiState.gameStatus as? GameStatus.Won)?.winningLine
+
+  Scaffold(contentWindowInsets = WindowInsets.safeDrawing) { innerPadding ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
+    ) {
+      GameHeader(
+        uiState = uiState,
+        onOpenSettings = { viewModel.openSettings(true) },
+        onOpenStats = { viewModel.openStats(true) },
+        onOpenRules = { viewModel.openRules(true) }
+      )
+
+      GomokuBoard(
+        board = uiState.board,
+        lastMove = uiState.lastMove,
+        winningLine = winningLine,
+        hintPoint = uiState.hint?.first,
+        showMoveNumbers = uiState.showMoveNumbers,
+        moveHistory = uiState.moveHistory,
+        onCellClick = viewModel::onCellClicked,
+        modifier = Modifier.weight(1f)
+      )
+
+      GameControlBar(
+        uiState = uiState,
+        onUndo = viewModel::undo,
+        onRequestHint = viewModel::requestHint,
+        onToggleMoveNumbers = viewModel::toggleShowMoveNumbers,
+        onNewGame = viewModel::startNewGame,
+        onEnterReplay = viewModel::enterReplayMode,
+        onExitReplay = viewModel::exitReplayMode,
+        onReplayPrev = viewModel::replayPrevious,
+        onReplayNext = viewModel::replayNext,
+        onReplayJump = viewModel::replayJump
+      )
+    }
+  }
+
+  if (uiState.showGameOverDialog) {
+    GameOverDialog(
+      uiState = uiState,
+      stats = stats,
+      onDismiss = viewModel::dismissGameOverDialog,
+      onRestart = viewModel::startNewGame,
+      onEnterReplay = viewModel::enterReplayMode
+    )
+  }
+
+  if (uiState.isSettingsOpen) {
+    GameSettingsDialog(
+      uiState = uiState,
+      onDismiss = { viewModel.openSettings(false) },
+      onSelectMode = viewModel::setGameMode,
+      onSelectDifficulty = viewModel::setDifficulty,
+      onSelectHumanPiece = viewModel::setHumanPiece
+    )
+  }
+
+  if (uiState.isStatsOpen) {
+    GameStatsDialog(
+      stats = stats,
+      onDismiss = { viewModel.openStats(false) },
+      onReset = viewModel::resetStats
+    )
+  }
+
+  if (uiState.isRulesOpen) {
+    GameRulesDialog(onDismiss = { viewModel.openRules(false) })
+  }
+}
